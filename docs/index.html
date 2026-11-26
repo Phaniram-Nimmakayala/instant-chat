@@ -28,7 +28,7 @@
             if (!text) return;
 
             try {
-                const response = await fetch('/api/messages', {
+                const response = await fetch('https://instant-chat-154i.onrender.com/api/messages', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ chat: text })
