@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-row">
+            <h1>Received Messages</h1>
+            <div class="actions">
+                <button id="refreshBtn" onclick="loadMessages()">Refresh</button>
+                <button id="deleteBtn" class="delete-btn" onclick="deleteMessages()">Delete Messages</button>
+            </div>
+        </div>
+
+        <div id="messagesBox" class="messages-box">
+            <p class="empty-text">Loading messages...</p>
+        </div>
+    </div>
+
+    <script>
+        async function loadMessages() {
+            const box = document.getElementById('messagesBox');
+
+            try {
+                const response = await fetch('/api/messages');
+                const messages = await response.json();
+
+                box.innerHTML = '';
+
+                if (messages.length === 0) {
+                    box.innerHTML = '<p class="empty-text">No messages received yet.</p>';
+                    return;
+                }
+
+                messages.forEach((msg) => {
+                    const item = document.createElement('div');
+                    item.className = 'message-item';
+
+                    const textEl = document.createElement('p');
+                    textEl.className = 'message-text';
+                    textEl.textContent = msg.text;
+
+                    const timeEl = document.createElement('span');
+                    timeEl.className = 'message-time';
+                    timeEl.textContent = msg.created_at;
+
+                    item.appendChild(textEl);
+                    item.appendChild(timeEl);
+                    box.appendChild(item);
+                });
+            } catch (error) {
+                box.innerHTML = '<p class="empty-text">Error loading messages.</p>';
+            }
+        }
+
+        async function deleteMessages() {
+            const box = document.getElementById('messagesBox');
+
+            try {
+                const response = await fetch('/api/messages', {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    box.innerHTML = '<p class="empty-text">No messages received yet.</p>';
+                } else {
+                    alert('Failed to delete messages.');
+                }
+            } catch (error) {
+                alert('Server connection error.');
+            }
+        }
+
+        // Fetch messages immediately when the page opens
+        loadMessages();
+    </script>
+</body>
+</html>

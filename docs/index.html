@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Page</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <form id="chatForm">
+            <h1>Instant Chat</h1>
+            <input type="text" id="chat" name="chat" placeholder="Enter text" required>
+            <button type="submit">Submit</button>
+            <p id="status"></p>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('chatForm');
+        const input = document.getElementById('chat');
+        const status = document.getElementById('status');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevent page reload
+
+            const text = input.value.trim();
+            if (!text) return;
+
+            try {
+                const response = await fetch('/api/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat: text })
+                });
+
+                if (response.ok) {
+                    status.textContent = 'Message sent!';
+                    status.style.color = 'green';
+                    input.value = ''; // Clear input
+                } else {
+                    status.textContent = 'Failed to send message.';
+                    status.style.color = 'red';
+                }
+            } catch (error) {
+                status.textContent = 'Server connection error.';
+                status.style.color = 'red';
+            }
+        });
+    </script>
+</body>
+</html>
